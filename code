@@ -1,0 +1,91 @@
+import random
+
+firstCard = 0
+secondCard = 0
+
+# In the lists, the first number represents the card being drawn. The second
+# is the number of times choosing 'higher' has won or would have won. The 
+# third number is the total number of times that card has been drawn.
+oddsList = [[1,0,0],[2,0,0],[3,0,0],[4,0,0],[5,0,0],[6,0,0],[7,0,0],[8,0,0],[9,0,0],[10,0,0],[11,0,0],[12,0,0],[13,0,0]]
+
+# Draw a random card. We only need the value, and we assume the card returns to the deck
+def drawCard():
+    drawnCard = random.randint(1,13)
+    return drawnCard
+
+# This is where the program 'learns' the proper strategy. The user can choose the number of times
+# it tries a hand, so they can adjust how much data it receives
+def learn():
+    cycles = int(input("Enter number of learning cycles: "))
+    for c in range(0, cycles):
+        global firstCard
+        global secondCard
+        firstCard = drawCard()
+        secondCard = drawCard()
+		# Update the odds list with the result
+        if (firstCard > secondCard):
+            oddsList[firstCard-1][2] = oddsList[firstCard-1][2]+1
+        elif (firstCard < secondCard):
+            # Add one to the times higher won for that card
+            oddsList[firstCard-1][1] = oddsList[firstCard-1][1]+1
+            oddsList[firstCard-1][2] = oddsList[firstCard-1][2]+1
+        # Reset for next round
+        firstCard = 0
+        secondCard = 0
+    print("Choosing higher wins this often:")
+    for card in oddsList:
+        if card[2] == 0:
+            continue
+        odds = (card[1]/card[2])
+        print(str(card[1]) + "/" + str(card[2]))
+        percent = odds*100
+        print("    Card " + str(card[0]) + ": " + str(round(percent, 2)) + "%")
+
+
+def play():
+    hands = int(input("Enter number of hands to play: "))
+    global firstCard
+    global secondCard
+    wins = 0
+    losses = 0
+    pushes = 0
+	# Handles if there is too small a sample size in learn to get info for each card
+    for each in oddsList:
+        if each[2] == 0:
+            print("Not enough data to proceed")
+            return
+	# Compare card to average wins by choosing higher. If above average (or precisely), choose higher,
+	# otherwise choose lower. Update wins/losses/pushes tracker
+    for h in range(0, hands):
+        firstCard = drawCard()
+        secondCard = drawCard()
+        if oddsList[firstCard-1][1]/oddsList[firstCard-1][2] >= .5:
+            guess = "H"
+        elif oddsList[firstCard-1][1]/oddsList[firstCard-1][2] < .5:
+            guess = "L"
+        else:
+            guess = "Error"
+        if ((firstCard < secondCard) & (guess == "H")):
+            wins = wins+1
+        elif ((firstCard > secondCard) & (guess == "L")):
+            wins = wins+1
+        elif ((firstCard == secondCard)):
+            pushes = pushes+1
+        elif ((firstCard < secondCard) & (guess == "L")):
+            losses = losses+1
+        elif ((firstCard > secondCard) & (guess == "H")):
+            losses = losses+1
+        else:
+            print("Error")
+            break
+	# Print summation
+    print("Wins: " + str(wins) + "   Losses: " + str(losses) + "    Pushes: " + str(pushes))
+    print("Win Percent: " + str(wins/(wins+losses)))
+
+# Automatically flow from learn to play
+def main():
+    learn()
+    play()
+
+main()
+
