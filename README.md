@@ -1,6 +1,6 @@
 Higher Lower game
 
-Basic program in python to have a program determine on its own how to play a game. Exceptionally simple, just practice.
+Basic program in python to have a program determine on its own how to play a game. A simple program designed to practice learning.
 The game has the player draw a card, then answer if the next card will be higher or lower. This version assumes the first 
 card goes back in the pile. The second card is drawn, determining if the player won or lost.
 
